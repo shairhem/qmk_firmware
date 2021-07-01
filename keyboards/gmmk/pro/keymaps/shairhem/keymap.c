@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define _BASE 0
 
-#define _BASE_COLOR_RGB 0, 25, 45
-#define _CAPS_COLOR_RGB 100, 0, 0
+#define _BASE_COLOR_RGB 0, 15, 40
+#define _CAPS_COLOR_RGB 80, 0, 0
 
 #define ESC_KEY 0
 
