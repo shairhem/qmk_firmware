@@ -13,20 +13,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "timer.h"
 #include QMK_KEYBOARD_H
 
 #define _BASE 0
 
-#define _BASE_COLOR_RGB 0, 15, 40
+#define _BASE_COLOR_RGB 0, 10, 40
 #define _CAPS_COLOR_RGB 80, 0, 0
 #define _BASE_COLOR_OFF 0, 0, 0
 
-#define RGB_TIMEOUT 960000 // 15 minutes
 #define ESC_KEY 9
-
-static uint32_t key_timer = 0;
-static bool rgb_suspended = true;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //      ESC      F1       F2       F3       F4       F5       F6       F7       F8       F9       F10      F11      F12	     Prt           Rotary(Mute)
@@ -84,41 +79,6 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     return true;
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-    key_timer = timer_read32();
-    return true;
-}
-
-void matrix_scan_user(void) { 
-    if (timer_elapsed32(key_timer) > RGB_TIMEOUT) { // 30 seconds
-        rgb_suspended = true;
-        rgb_matrix_set_color_all(_BASE_COLOR_OFF);
-    } else {
-        if (rgb_suspended) {
-            rgb_suspended = false;
-            rgb_matrix_indicators_user();
-        }
-    }
-}
-
-void rgb_matrix_indicators_user(void) {
-    rgb_matrix_set_color_all(_BASE_COLOR_RGB);
-    if (host_keyboard_led_state().caps_lock) {
-        
-        rgb_matrix_set_color(ESC_KEY, _CAPS_COLOR_RGB);
-
-        for (uint8_t i = 0; i < DRIVER_LED_TOTAL; ++i) {
-            if (HAS_ANY_FLAGS(g_led_config.flags[i], LED_FLAG_UNDERGLOW)) {
-                rgb_matrix_set_color(i, _CAPS_COLOR_RGB);
-            }
-        }
-    }
-}
-
-void suspend_power_down_user(void) {
-    rgb_matrix_set_suspend_state(true);
-}
-
-void suspend_wakeup_init_user(void) {
-    rgb_matrix_set_suspend_state(false);
+void keyboard_post_init_user(void) {
+  rgb_matrix_mode_noeeprom(1);
 }
